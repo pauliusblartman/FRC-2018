@@ -1,3 +1,4 @@
+package CubeDetection;
 import java.net.InetAddress;
 import org.opencv.core.*;
 import org.opencv.videoio.VideoCapture;
