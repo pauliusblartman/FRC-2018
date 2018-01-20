@@ -1,9 +1,12 @@
 package CubeDetection;
 import java.net.InetAddress;
+
 import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+
 
 public class Main {
 	static {
@@ -14,7 +17,7 @@ public class Main {
 	public static float HorizontalFOV = 59.7F;
 	public static float VerticalFOV = 33.6F;
 	
-	public static String ip = "roboRIO-1493-FRC.lan";
+	public static String ip = "10.14.93.2";
 	
 	public static void main(String[] args) {
 		Mat matSource = new Mat();
@@ -36,9 +39,14 @@ public class Main {
 			videoCapture.read(matSource);
 			pipeline.process(matSource);
 			locateContour.locateContours(pipeline.filterContoursOutput(), matSource, HorizontalFOV, VerticalFOV);
-			table.putNumberArray("Horizontal-Angles", (Double[]) locateContour.getXAngles().toArray());
-			table.putNumberArray("Vertical-Angles", (Double[]) locateContour.getYAngles().toArray());
-			table.putValue("Image", matSource);
+			table.putNumberArray("Horizontal-Angles",  locateContour.getXAngles());
+			table.putNumberArray("Vertical-Angles",  locateContour.getYAngles());
+			
+			//table.putNumber("Horizontal-Angle",  locateContour.x_Angle);
+			//table.putNumber("Vertical-Angle",  locateContour.y_Angle);
+			
+			
+			Imgcodecs.imwrite("output.png", matSource);
 		}
 		
 		videoCapture.release();;

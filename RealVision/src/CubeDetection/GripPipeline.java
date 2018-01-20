@@ -1,4 +1,5 @@
 package CubeDetection;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.*;
@@ -36,10 +37,13 @@ public class GripPipeline {
 
 		// Step HSL_Threshold0:
 		Mat hslThresholdInput = blurOutput;
-		double[] hslThresholdHue = {21.043165467625897, 34.54545454545455};
-		double[] hslThresholdSaturation = {61.915467625899275, 203.48484848484844};
-		double[] hslThresholdLuminance = {84.84712230215827, 209.9242424242424};
-		hslThreshold(hslThresholdInput, hslThresholdHue, hslThresholdSaturation, hslThresholdLuminance, hslThresholdOutput);
+		//double[] hslThresholdHue = {19.423728813559322, 42.80843585237258}; //OLD possibly good values {25.423728813559322, 40.80843585237258}
+		//double[] hslThresholdSaturation = {0.00, 255.0};//{194.4915254237288, 255.0}
+		//double[] hslThresholdLuminance = {22.8135593220339, 76.21968365553602};//{28.8135593220339, 80.21968365553602}
+		double[] hsvThresholdHue = {24,56};
+		double[] hsvThresholdSaturation = {119,255};
+		double[] hsvThresholdValue = {64,255};
+		hsvThreshold(hslThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hslThresholdOutput);
 
 		// Step Find_Contours0:
 		Mat findContoursInput = hslThresholdOutput;
@@ -60,10 +64,11 @@ public class GripPipeline {
 		double filterContoursMaxHeight = 100000.0;
 		double[] filterContoursSolidity = {0.0, 100.0};
 		double filterContoursMaxVertices = 64.0;
-		double filterContoursMinVertices = 24.0;
+		double filterContoursMinVertices = 16.0;
 		double filterContoursMinRatio = 0.5;
-		double filterContoursMaxRatio = 1.5;
+		double filterContoursMaxRatio = 1.75;
 		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
+
 	}
 
 	/**
@@ -181,12 +186,19 @@ public class GripPipeline {
 	 * @param lum The min and max luminance
 	 * @param output The image in which to store the output.
 	 */
-	private void hslThreshold(Mat input, double[] hue, double[] sat, double[] lum,
+/*	private void hslThreshold(Mat input, double[] hue, double[] sat, double[] lum,
 		Mat out) {
 		Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HLS);
 		Core.inRange(out, new Scalar(hue[0], lum[0], sat[0]),
 			new Scalar(hue[1], lum[1], sat[1]), out);
-	}
+	}*/
+	
+	private void hsvThreshold(Mat input, double[] hue, double[] sat, double[] val,
+			Mat out) {
+			Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HSV);
+			Core.inRange(out, new Scalar(hue[0], sat[0], val[0]),
+				new Scalar(hue[1], sat[1], val[1]), out);
+		}
 
 	/**
 	 * Sets the values of pixels in a binary image to their distance to the nearest black pixel.

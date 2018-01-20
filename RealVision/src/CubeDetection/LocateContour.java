@@ -13,23 +13,31 @@ public class LocateContour {
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
-	public ArrayList<Float> xAngles;
-	public ArrayList<Float> yAngles;
+	public ArrayList<Double> xAngles;
+	public ArrayList<Double> yAngles;
+	
+	public double x_Angle = 0;
+	public double y_Angle = 0;
 public LocateContour()
 {
 	
 }
 
-public void locateContours(ArrayList<MatOfPoint> Contours, Mat SourceImage, float xFieldOfView, Float yFieldOfView)
+public void locateContours(ArrayList<MatOfPoint> Contours, Mat SourceImage, float xFieldOfView, float yFieldOfView)
 {
+	xAngles = new ArrayList<Double>();
+	yAngles = new ArrayList<Double>();
 	for (MatOfPoint c : Contours) {
 		Rect rec = Imgproc.boundingRect(c);
-		int centerX = rec.x + rec.width / 2;
-		float xPercent = SourceImage.width() / centerX;
-		float xAngle = xFieldOfView * xPercent;
-		int centerY = rec.x + rec.width / 2;
-		float yPercent = SourceImage.width() / centerY;
-		float yAngle = yFieldOfView * yPercent;
+		float centerX = rec.x + (rec.width / 2);
+		double xPercent = (double)centerX / (double)SourceImage.width();
+		double xAngle = (xFieldOfView * xPercent) - (xFieldOfView / 2);
+		float centerY = rec.y + (rec.height / 2);
+		double yPercent = (double)centerY / (double)SourceImage.height();
+		double yAngle = (yFieldOfView * yPercent) - (yFieldOfView / 2);
+		
+		x_Angle = xPercent;
+		y_Angle = yPercent;
 		
 		xAngles.add(xAngle);
 		yAngles.add(yAngle);
@@ -42,16 +50,28 @@ public void locateContours(ArrayList<MatOfPoint> Contours, Mat SourceImage, floa
 	Imgproc.drawContours(SourceImage, Contours, 0, new Scalar(255,0,0));
 }
 
-public ArrayList<Float> getXAngles()
+public double[] getXAngles()
 {
-	if(xAngles != null)
-		return xAngles;
-	return new ArrayList<Float>();
+	double[] returnArray = new double[0];
+	if(xAngles != null) {
+		returnArray = new double[xAngles.size()];
+		for(int i = 0; i < returnArray.length; ++i)
+		{
+			returnArray[i] = xAngles.get(i);
+		}
+	}
+	return returnArray;
 }
-public ArrayList<Float> getYAngles()
+public double[] getYAngles()
 {
-	if(yAngles != null)
-	return yAngles;
-	return new ArrayList<Float>();
+	double[] returnArray = new double[0];
+	if(yAngles != null) {
+		returnArray = new double[yAngles.size()];
+		for(int i = 0; i < returnArray.length; ++i)
+		{
+			returnArray[i] = yAngles.get(i);
+		}
+	}
+	return returnArray;
 }
 }
